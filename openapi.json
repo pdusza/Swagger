@@ -1,5 +1,5 @@
 {
-  "openapi": "2.0.0",
+  "openapi": "3.0.0",
   "info": {
     "title": "Replikation Bewilligung",
     "description": "Schnittstelle zur maschinellen eigenverantwortlichen Verwaltung der replizierten Bewilligungen durch die zuständige Stelle. Die replizierten Bewilligungen werden vom BAZG als Basis für die NAE spezifischen Zollprozesse verwendet.",
