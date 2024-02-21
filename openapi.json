@@ -1,0 +1,1247 @@
+{
+  "openapi": "2.0.0",
+  "info": {
+    "title": "Replikation Bewilligung",
+    "description": "Schnittstelle zur maschinellen eigenverantwortlichen Verwaltung der replizierten Bewilligungen durch die zuständige Stelle. Die replizierten Bewilligungen werden vom BAZG als Basis für die NAE spezifischen Zollprozesse verwendet.",
+    "version": "1.2.0",
+    "contact": {
+      "name": "Team Suvretta",
+      "email": "andrei.dudnikov@bit.admin.ch"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://b2bgw.bazg.admin.ch/autorisaziun/externalpermits"
+    }
+  ],
+  "paths": {
+    "/permits/{sector-id}": {
+      "post": {
+        "summary": "Abfrage einer Liste mit Bewilligungen für einen Bewilligungsbereich",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Pagination"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SectorId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Bewilligungen für einen Bewilligungsbereich",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermitQueryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/RequestNotCorrect"
+          },
+          "401": {
+            "description": "Keine Berechtigung vorhanden"
+          },
+          "403": {
+            "description": "Keine Berechtigung den Bewilligungsbereich (sector) auszulesen"
+          }
+        }
+      }
+    },
+    "/permits/{sector-id}/{permit-id}": {
+      "get": {
+        "summary": "Abfrage einer Bewilligung inklusiv Status",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SectorId"
+          },
+          {
+            "$ref": "#/components/parameters/PermitId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail Bewilligung",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Permit"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/RequestNotCorrect"
+          },
+          "401": {
+            "description": "Keine Berechtigung vorhanden"
+          },
+          "403": {
+            "description": "Keine Berechtigung den Bewilligungsbereich (sector) auszulesen"
+          },
+          "404": {
+            "description": "Keine entsprechende Bewilligung gefunden"
+          }
+        }
+      },
+      "put": {
+        "summary": "Erstellen einer neuen oder ändern einer existierenden Bewilligung",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SectorId"
+          },
+          {
+            "$ref": "#/components/parameters/PermitId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PermitRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Eine existierende Bewilligung konnte überschrieben werden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Permit"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Die Bewillinung konnte erstellt werden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Permit"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/RequestNotCorrect"
+          },
+          "401": {
+            "description": "Keine Berechtigung vorhanden"
+          },
+          "403": {
+            "description": "Keine Berechtigung die Bewilligung zu erstellen oder zu ändern"
+          },
+          "404": {
+            "description": "Kein entsprechender Bewilligungsbereich (sector)"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eine Bewilligung wird gelöscht. Die Löschung kann nur im Status Bereit erfolgen.             ",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SectorId"
+          },
+          {
+            "$ref": "#/components/parameters/PermitId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Löschung erfolgreich."
+          },
+          "400": {
+            "$ref": "#/components/responses/RequestNotCorrect"
+          },
+          "401": {
+            "description": "Keine Berechtigung vorhanden"
+          },
+          "403": {
+            "description": "Keine Berechtigung die Bewilligung zu löschen"
+          },
+          "404": {
+            "description": "Keine entsprechende Bewilligung gefunden"
+          }
+        }
+      }
+    },
+    "/permits/{sector-id}/{permit-id}/suspension": {
+      "put": {
+        "summary": "Sistierung einer existierenden Bewilligung. Die Sistierung darf nicht in der Vergangenheit liegen.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SectorId"
+          },
+          {
+            "$ref": "#/components/parameters/PermitId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuspensionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sistierung der Bewilligung.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuspensionResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Die Sistierung der Bewilligung wurde erstellt.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuspensionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/RequestNotCorrect"
+          },
+          "401": {
+            "description": "Keine Berechtigung vorhanden"
+          },
+          "403": {
+            "description": "Keine Berechtigung die Bewilligung zu sistieren"
+          },
+          "404": {
+            "description": "Keine entsprechende Bewilligung gefunden"
+          }
+        }
+      }
+    },
+    "/permits/{sector-id}/{permit-id}/reactivation": {
+      "put": {
+        "summary": "Reaktivieren einer sistierten Bewilligung.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SectorId"
+          },
+          {
+            "$ref": "#/components/parameters/PermitId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReactivationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Die sistierte Bewilligung wurde reaktiviert.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Suspension"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Die sistierte Bewilligung wurde reaktiviert.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Suspension"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/RequestNotCorrect"
+          },
+          "401": {
+            "description": "Keine Berechtigung vorhanden"
+          },
+          "403": {
+            "description": "Keine Berechtigung die Bewilligung zu reaktivieren."
+          },
+          "404": {
+            "description": "Die Bewilligung oder Sistierung konnte nicht gefunden werden."
+          }
+        }
+      }
+    },
+    "/permits/{sector-id}/{permit-id}/revocation": {
+      "put": {
+        "summary": " Entzug einer aktiven oder sistierten Bewilligung (→ Bewilligung im Status Bereit darf nicht entzogen, sondern muss gelöscht werden).",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SectorId"
+          },
+          {
+            "$ref": "#/components/parameters/PermitId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevocationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Entzug der Bewilligung",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Revocation"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/RequestNotCorrect"
+          },
+          "401": {
+            "description": "Keine Berechtigung vorhanden"
+          },
+          "403": {
+            "description": "Keine Berechtigung die Bewilligung zu entziehen"
+          },
+          "404": {
+            "description": "Keine entsprechende Bewilligung gefunden"
+          }
+        }
+      }
+    },
+    "/permits/{sector-id}/{permit-id}/accountbalance": {
+      "get": {
+        "summary": "Abfrage der Restmenge einer Bewilligung",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SectorId"
+          },
+          {
+            "$ref": "#/components/parameters/PermitId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bewilligungskontodetails",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountBalance"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/RequestNotCorrect"
+          },
+          "401": {
+            "description": "Keine Berechtigung vorhanden"
+          },
+          "403": {
+            "description": "Keine Berechtigung diese Bewilligung auszulesen"
+          },
+          "404": {
+            "description": "Keine entsprechende Bewilligung gefunden"
+          }
+        }
+      }
+    },
+    "/usages/{sector-id}": {
+      "get": {
+        "summary": "Abfrage welche Abschreibungen hat es seit fromTimestamp gegeben.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SectorId"
+          },
+          {
+            "$ref": "#/components/parameters/FromTimestamp"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details der Abschreibungen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/RequestNotCorrect"
+          },
+          "401": {
+            "description": "Keine Berechtigung vorhanden"
+          },
+          "403": {
+            "description": "Keine Berechtigung die Bewilligungen des Bewilligungsbereichs auszulesen"
+          },
+          "404": {
+            "description": "Kein entsprechender Bewilligungsbereich vorhanden"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "RequestNotCorrect": {
+        "description": "Anfrage ist nicht korrekt. Siehe ErrorResponse",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "PermitId": {
+        "name": "permit-id",
+        "in": "path",
+        "description": "Für Bewilligungsbereich eine eindeutige ID, die eine Bewilligung identifiziert",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 32
+        }
+      },
+      "SectorId": {
+        "name": "sector-id",
+        "in": "path",
+        "description": "Bewilligungsbereich",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "SectorIdQuery": {
+        "name": "sectorid",
+        "in": "query",
+        "description": "Bewilligungsbereich",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "FromTimestamp": {
+        "name": "fromTimestamp",
+        "in": "query",
+        "description": "Von Timestamp inklusiv für Abfragen",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2023-01-01T00:00:00.000Z"
+        }
+      }
+    },
+    "schemas": {
+      "Sector": {
+        "description": "Bewilligungsbereich",
+        "type": "object",
+        "required": [
+          "competentDepartmentId",
+          "sectorId"
+        ],
+        "properties": {
+          "competentDepartmentId": {
+            "description": "Geschäftspartner-ID der Zuständigen Stelle, welche nach der Anmeldung im Token definiert ist.",
+            "type": "string",
+            "maxLength": 32
+          },
+          "sectorId": {
+            "description": "Bewilligungsbereich",
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PermitRequest": {
+        "description": "Bewilligung",
+        "type": "object",
+        "required": [
+          "permitTypeId",
+          "permitHolder",
+          "goodsProvision",
+          "activeFrom",
+          "activeTo"
+        ],
+        "properties": {
+          "permitTypeId": {
+            "description": "Bewilligungstyp",
+            "type": "string"
+          },
+          "permitHolder": {
+            "$ref": "#/components/schemas/PermitHolder"
+          },
+          "goodsProvision": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/GoodsProvision"
+            }
+          },
+          "activeFrom": {
+            "description": "Ab wann ist die Bewilligung gültig. Inklusive immer ab 00:00h",
+            "type": "string",
+            "format": "date"
+          },
+          "activeTo": {
+            "description": "Bis wann ist die Bewilligung gültig. Inklusive immer bis 23:59:59",
+            "type": "string",
+            "format": "date"
+          },
+          "supplyUnits": {
+            "description": "Anzahl Liefereinheit = 1 bedeutet eine einmalige Lieferung; Anzahl Liefereinheit = leer bedeutet keine Einschränkung der Anzahl Liefereinheiten.",
+            "type": "integer",
+            "format": "int32",
+            "example": 1
+          },
+          "countriesOfDispatch": {
+            "$ref": "#/components/schemas/CountryRestriction"
+          },
+          "countriesOfDestination": {
+            "$ref": "#/components/schemas/CountryRestriction"
+          },
+          "positions": {
+            "description": "Bewilligungspositionsliste",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PermitPosition"
+            }
+          }
+        }
+      },
+      "Permit": {
+        "description": "Bewilligung",
+        "type": "object",
+        "required": [
+          "sectorId",
+          "permitId",
+          "sector",
+          "state"
+        ],
+        "properties": {
+          "permitId": {
+            "description": "Für Bewilligungsbereich eine eindeutige ID, welche eine Bewilligung identifiziert",
+            "type": "string",
+            "maxLength": 32
+          },
+          "sector": {
+            "$ref": "#/components/schemas/Sector"
+          },
+          "state": {
+            "$ref": "#/components/schemas/PermitState"
+          },
+          "suspension": {
+            "$ref": "#/components/schemas/Suspension"
+          },
+          "revocation": {
+            "$ref": "#/components/schemas/Revocation"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PermitRequest"
+          }
+        ]
+      },
+      "PermitPositionNumber": {
+        "description": "Bewilligungspositionsnummer",
+        "type": "integer",
+        "format": "int32",
+        "minimum": 1,
+        "maximum": 99
+      },
+      "PermitPosition": {
+        "description": "Bewilligungsposition mit Ware und optionaler Mengenbeschränkung",
+        "type": "object",
+        "required": [
+          "positionNumber"
+        ],
+        "properties": {
+          "positionNumber": {
+            "$ref": "#/components/schemas/PermitPositionNumber"
+          },
+          "countryOfOrigin": {
+            "$ref": "#/components/schemas/Countries"
+          },
+          "tariffNumbers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TariffControlNumber"
+            }
+          },
+          "nclProduct": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NclProduct"
+            }
+          },
+          "quantityRestriction": {
+            "$ref": "#/components/schemas/QuantityRestriction"
+          }
+        }
+      },
+      "TariffControlNumber": {
+        "description": "https://xtares.admin.ch/tares ",
+        "type": "string",
+        "pattern": "^\\d{4}\\.\\d{4}\\/\\d{3}|\\d{4}\\.\\d{4}|\\d{4}\\.\\d{2}|\\d{4}",
+        "example": [
+          "'0602' passt für ganze Unterkapitel 0602",
+          "'0602.90' passt für 0602.9091 und 0602.9099",
+          "'0602.9099' passt für 0602.9099/911 und 0602.9099/999",
+          "'0602.9091/000' TN8 ControlCode 000"
+        ]
+      },
+      "NclProduct": {
+        "description": "NAE Produkt aus dem Produktkatalog des Bewilligungsbereiches",
+        "type": "object",
+        "required": [
+          "id",
+          "description"
+        ],
+        "properties": {
+          "id": {
+            "description": "ID des Produkts aus dem Produktekatalog des Bewilligungsbereiches",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 36
+          }
+        }
+      },
+      "QuantityRestriction": {
+        "description": "Mengeneinschränkung - Mengen, welche bei Waren angegeben und eingeschränkt werden können",
+        "type": "object",
+        "required": [
+          "quantityType",
+          "quantity"
+        ],
+        "properties": {
+          "quantityType": {
+            "description": "Typ/Art der Mengeneinschränkung",
+            "type": "string",
+            "enum": [
+              "GROSS_MASS",
+              "NET_MASS",
+              "ADDITIONAL_MASS",
+              "NCL_MASS"
+            ]
+          },
+          "nclUnit": {
+            "$ref": "#/components/schemas/NclUnit"
+          },
+          "quantity": {
+            "type": "number",
+            "format": "double",
+            "description": "Menge der Ware"
+          }
+        }
+      },
+      "CountryRestriction": {
+        "type": "object",
+        "required": [
+          "countryValidationType",
+          "country"
+        ],
+        "properties": {
+          "countryValidationType": {
+            "type": "string",
+            "enum": [
+              "INCLUDE",
+              "EXCLUDE"
+            ]
+          },
+          "country": {
+            "$ref": "#/components/schemas/Countries"
+          }
+        }
+      },
+      "Countries": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Country"
+        }
+      },
+      "Country": {
+        "type": "string",
+        "pattern": "^\\w{2}",
+        "description": "Land ISO 3166-1 alpha-2 Code",
+        "example": "GB"
+      },
+      "Address": {
+        "description": "Internationale Adresse gemäss [Meldung NE015](https://confluence.bit.admin.ch/x/R6QIEg)",
+        "type": "object",
+        "required": [
+          "country",
+          "postCode"
+        ],
+        "properties": {
+          "country": {
+            "$ref": "#/components/schemas/Country"
+          },
+          "postCode": {
+            "description": "Postleitzahl",
+            "type": "string",
+            "maxLength": 17
+          }
+        }
+      },
+      "PermitHolderIdType": {
+        "description": "Eigentümer einer Bewilligung",
+        "type": "object",
+        "required": [
+          "id",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "type": {
+            "description": "ID typ",
+            "type": "string",
+            "enum": [
+              "BP_ID",
+              "GLN",
+              "UID"
+            ]
+          }
+        }
+      },
+      "PermitHolderId": {
+        "type": "object",
+        "required": [
+          "permitHolderId"
+        ],
+        "properties": {
+          "permitHolderId": {
+            "$ref": "#/components/schemas/PermitHolderIdType"
+          }
+        }
+      },
+      "PermitHolder": {
+        "description": "Bewilligungsinhaber entweder PermitHolderId oder Party",
+        "properties": {
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Roles"
+            }
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PermitHolderId"
+          },
+          {
+            "$ref": "#/components/schemas/Party"
+          }
+        ]
+      },
+      "Roles": {
+        "description": "Rollen von Bewilligungsinhaber - Roles ist Pflichtangabe, Ausnahme: Bei Verwendung von fremder Personen-ID (z.B. GLN), muss roles leer sein.",
+        "type": "string",
+        "enum": [
+          "IMPORTER",
+          "EXPORTER",
+          "CONSIGNEE",
+          "CONSIGNOR"
+        ]
+      },
+      "Party": {
+        "description": "Bewilligungsinhaber als Person/Firma",
+        "type": "object",
+        "required": [
+          "party"
+        ],
+        "properties": {
+          "party": {
+            "$ref": "#/components/schemas/PartyType"
+          }
+        }
+      },
+      "PartyType": {
+        "description": "Bewilligungsinhaber als Person/Firma",
+        "type": "object",
+        "required": [
+          "name",
+          "address"
+        ],
+        "properties": {
+          "name": {
+            "description": "Name des Bewilligungsinhabers",
+            "type": "string",
+            "maxLength": 70
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          }
+        }
+      },
+      "SuspensionRequest": {
+        "description": "Anfrage für eine Sistierung. Wenn das Datum leer ist wird die Sistierung sofort durchgeführt.",
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "properties": {
+          "suspendAt": {
+            "description": "Sistierungsdatum in der Zukunft liegend. Falls nicht vorhanden wird die Bewilligung sofort sistiert.",
+            "type": "string",
+            "format": "date"
+          },
+          "reason": {
+            "description": "Grund der Sistierung",
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          }
+        }
+      },
+      "SuspensionResponse": {
+        "description": "Stornierungsobjekt",
+        "type": "object",
+        "required": [
+          "suspendAt",
+          "reason"
+        ],
+        "properties": {
+          "suspendAt": {
+            "description": "Zeitpunkt der Sistierung",
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "description": "Grund der Sistierung",
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          }
+        }
+      },
+      "Suspension": {
+        "description": "Sistierungsobjekt",
+        "required": [
+          "suspendAt",
+          "reason"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SuspensionResponse"
+          }
+        ],
+        "type": "object",
+        "properties": {
+          "reactivation": {
+            "$ref": "#/components/schemas/Reactivation"
+          }
+        }
+      },
+      "RevocationRequest": {
+        "description": "Anfrage für einen Entzug. Wenn das Datum leer ist wird der Entzug sofort durchgeführt.",
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "properties": {
+          "revokeAt": {
+            "description": "Entzugsdatum - Datum in der Zukunft. Falls nicht vorhanden wird die Bewilligung sofort entzogen.",
+            "type": "string",
+            "format": "date"
+          },
+          "reason": {
+            "description": "Grund des Entzugs",
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          }
+        }
+      },
+      "Revocation": {
+        "description": "Entzug",
+        "type": "object",
+        "required": [
+          "revokeAt",
+          "reason"
+        ],
+        "properties": {
+          "revokeAt": {
+            "description": "Zeitpunkt des Entzugs",
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "description": "Grund des Entzugs",
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          }
+        }
+      },
+      "ReactivationRequest": {
+        "description": "Anfrage für eine Reaktivierung. Die Reaktivierung wird sofort durchgeführt.",
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "properties": {
+          "reason": {
+            "description": "Grund der Reaktivierung",
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          }
+        }
+      },
+      "Reactivation": {
+        "description": "Ende der Sistierung",
+        "type": "object",
+        "required": [
+          "reactivateAt",
+          "reason"
+        ],
+        "properties": {
+          "reactivateAt": {
+            "description": "Zeitpunkt der Reaktivierung (-> Zeitpunkt der Aufhebung der Sistierung)",
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "description": "Grund der Reaktivierung",
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          }
+        }
+      },
+      "GoodsProvision": {
+        "description": "Warenbestimmung gemäss Passar Codes",
+        "type": "string",
+        "enum": [
+          "IMPORT_GROUP",
+          "EXPORT_GROUP"
+        ]
+      },
+      "PermitState": {
+        "description": "Bewilligungszustände",
+        "type": "string",
+        "enum": [
+          "READY",
+          "ACTIVE",
+          "EXHAUSTED",
+          "EXPIRED",
+          "SUSPENDED",
+          "REVOKED",
+          "ARCHIVED"
+        ]
+      },
+      "UsageDetails": {
+        "description": "Liste mit Abschreibungsdetails",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/UsageDetail"
+        }
+      },
+      "UsageDetail": {
+        "description": "Abschreibungsdetails",
+        "required": [
+          "usageId",
+          "goodsActivationTimestamp",
+          "permitId"
+        ],
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "usageId": {
+                "description": "Abschreibungs ID",
+                "type": "string",
+                "maxLength": 36
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "CONSUMPTION",
+                  "CANCELLATION"
+                ]
+              },
+              "goodsDeclarationReferenceNumber": {
+                "type": "string",
+                "maxLength": 18,
+                "minLength": 18,
+                "example": "23CH03EXTMHEPBWJN5"
+              },
+              "goodsActivationTimestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "permitId": {
+                "type": "string",
+                "maxLength": 32
+              },
+              "amount": {
+                "$ref": "#/components/schemas/Amount"
+              },
+              "goodsIdentification": {
+                "$ref": "#/components/schemas/GoodsIdentification"
+              },
+              "positionNumber": {
+                "$ref": "#/components/schemas/PermitPositionNumber"
+              }
+            }
+          }
+        ]
+      },
+      "Amount": {
+        "description": "Menge von der Warenanmeldung",
+        "type": "object",
+        "properties": {
+          "grossMass": {
+            "type": "number",
+            "format": "double",
+            "description": "Rohmasse (Bruttomenge) in kg mit 3 Nachkommastellen",
+            "example": 1050.5
+          },
+          "netMass": {
+            "type": "number",
+            "format": "double",
+            "description": "Eigenmasse (Eigengewicht/Nettomenge) in kg mit 3 Nachkommastellen",
+            "example": 1005.5
+          },
+          "additionalMass": {
+            "type": "number",
+            "description": "Zusatzmenge (Menge der Alternativeinheit gemäss Tares)",
+            "example": 850
+          },
+          "nclMass": {
+            "type": "number",
+            "description": "NAE Menge",
+            "example": 150
+          },
+          "nclUnit": {
+            "$ref": "#/components/schemas/NclUnit"
+          }
+        }
+      },
+      "NclUnit": {
+        "description": "Einheiten für die NAE Ware. Ist zwingend für NCL_MASS",
+        "type": "string",
+        "enum": [
+          "AMPOULES",
+          "DOSES",
+          "SINGLE_DOSES",
+          "PRE_FILLED_SYRINGE",
+          "BOTTLES",
+          "GRAMS",
+          "KILOGRAMS",
+          "KIT",
+          "LITERS",
+          "PACKAGES",
+          "PIECES",
+          "VIALS"
+        ]
+      },
+      "GoodsIdentification": {
+        "description": "Warenidentifikation",
+        "type": "object",
+        "required": [
+          "tariffNumber"
+        ],
+        "properties": {
+          "tariffNumber": {
+            "type": "string",
+            "pattern": "^\\d{4}\\.\\d{4}\\/\\d{3}",
+            "example": "0602.9091/000"
+          },
+          "nclProductId": {
+            "description": "ID des NAE- Produktes aus dem Produktkatalog",
+            "type": "string",
+            "maxLength": 36
+          }
+        }
+      },
+      "AccountBalance": {
+        "description": "Kontostand der einzelnen Mengenbeschränkungen",
+        "type": "object",
+        "properties": {
+          "remainingSupplyUnits": {
+            "description": "Restmenge der Anzahl Liefereinheit",
+            "type": "integer",
+            "format": "int32",
+            "example": 1
+          },
+          "accountBalanceQuantity": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccountBalanceQuantity"
+            }
+          }
+        }
+      },
+      "QuantityType": {
+        "type": "string",
+        "enum": [
+          "GROSS_MASS",
+          "NET_MASS",
+          "ADDITIONAL_MASS",
+          "NCL_MASS"
+        ]
+      },
+      "AccountBalanceQuantity": {
+        "description": "Restmenge eines Kontos",
+        "type": "object",
+        "required": [
+          "quantityType",
+          "remainingQuantity",
+          "positionNumber"
+        ],
+        "properties": {
+          "quantityType": {
+            "$ref": "#/components/schemas/QuantityType"
+          },
+          "remainingQuantity": {
+            "type": "number",
+            "format": "double"
+          },
+          "positionNumber": {
+            "$ref": "#/components/schemas/PermitPositionNumber"
+          }
+        }
+      },
+      "PermitQueryResponse": {
+        "description": "Liste mit Bewilligungen",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Permit"
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "description": "https://www.rfc-editor.org/rfc/rfc9457.html",
+        "example": "{\n  \"type\": \"/external-permit/b2b-api/replication/v1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Ihre foobar-id ist nicht zulässig.\",\n  \"instance\": \"/external-permit/b2b-api/replication/v1/permits/1/1\",\n  \"correlationId\": \"8813f114-04e2-4762-adca-5dfb186fd401\",\n  \"timestamp\": \"2023-11-23T20:08:10.946237867Z\",\n  \"errors\": [{\n      \"code\": \"AB1234\",\n      \"detail\": \"Ihre foobar-id ist nicht zulässig.\"\n  }]\n}\n",
+        "properties": {
+          "type": {
+            "description": "Eine URI-Referenz [RFC3986], die den Problemtyp identifiziert.",
+            "type": "string",
+            "example": "/external-permit/b2b-api/replication/v1"
+          },
+          "title": {
+            "description": "Eine kurze, von Menschen lesbare Zusammenfassung des Problemtyps. Sie SOLLTE sich von Auftreten zu Auftreten des Problems NICHT ändern, ausser zu Zwecken der Lokalisierung (z.B. durch proaktive Inhaltsaushandlung; siehe [RFC7231], Abschnitt 3.4)",
+            "type": "string",
+            "example": "Bad Request"
+          },
+          "status": {
+            "description": "Der HTTP-Statuscode ([RFC7231], Abschnitt 6), der vom Ursprungsserver für dieses Auftreten des Problems generiert wurde.",
+            "type": "integer",
+            "format": "int32",
+            "example": 400
+          },
+          "detail": {
+            "description": "Eine von Menschen lesbare Erklärung, die sich auf das Auftreten des Problems bezieht; die Fehlerbeschreibung und der Fehlercode, falls einer angegeben ist.",
+            "type": "string",
+            "example": "Ihre foobar-id ist nicht zulässig."
+          },
+          "instance": {
+            "description": "Eine URI-Referenz, die das spezifische Auftreten des Problems identifiziert. Er kann weitere Informationen liefern, wenn er dereferenziert wird, muss aber nicht.",
+            "type": "string",
+            "example": "/external-permit/b2b-api/replication/v1/permits/1/1"
+          },
+          "correlationId": {
+            "description": "UUID dieser ErrorResponse, die vom System festgelegt wurde, um den Fehler in den Protokollen sicher zu identifizieren.",
+            "type": "string",
+            "maxLength": 36,
+            "example": "8813f114-04e2-4762-adca-5dfb186fd401"
+          },
+          "timestamp": {
+            "description": "Zeitpunkt, den das System in dem Moment vergibt, in dem der Fehler verarbeitet wurde.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-11-23T20:08:10.946237867Z"
+          },
+          "errors": {
+            "description": "Eine Liste von Fehlerdetails mit Fehlercode und Detailbeschreibung",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            }
+          }
+        }
+      },
+      "ErrorDetail": {
+        "description": "Fehlerdetail mit Fehlercode und Detailbeschreibung",
+        "type": "object",
+        "required": [
+          "code",
+          "detail"
+        ],
+        "properties": {
+          "code": {
+            "description": "Eine alphanumerische Fehlerreferenznummer, die bei fachlichen Fehlern vergeben worden sein KANN.",
+            "type": "string",
+            "example": "AB1234"
+          },
+          "detail": {
+            "description": "Detailbeschreibung der entsprechenden Fehlerreferenznummer",
+            "type": "string",
+            "example": "Ihre foobar-id ist nicht zulässig."
+          }
+        }
+      }
+    }
+  }
+}
